@@ -1,116 +1,66 @@
-//CS2
-//Assignment 5 DP Sticks Problem C
-//Program similar to the coin changing problem, except we find
-//the min cost to make cuts to a stick using DP and a hashtable for memoization
+//Assignemnt 5 DP Count Sequence Problem A
+//A similar problem to Longest Common Subsequence, using DP
+//and a hashtable for memoization
 
 import java.util.*;
+public class countseq {
+	//Make our Hashmap global
+	static HashMap<String, Integer> hashy;
 
-public class sticks {
-
-	//Making my hashmap "hashy" global
-	static HashMap<Integer, Integer> hashy;
-
-	public static void main(String[]args){
-
-		//New scanner to read in input from console
+	public static void main(String[] args){
+	//To take in input from console
 		Scanner stdin = new Scanner(System.in);
 
-		//Take in number of cases
+		int index1 =0, index2 =0;
+
+		//Scan in num cases
 		int cases = stdin.nextInt();
 
-		//Self explanatory
+		//For each case
 		while(cases != 0){
+			//Create a new hash map for the case
+			hashy = new HashMap<String, Integer>();
 
-			//Creates a new instance of the hashmap, "hashy", effectively resetting it for every case
-			hashy = new HashMap<Integer, Integer>(); //Reseting
+			//Take in the sequence we're looking at
+			String seq = stdin.next();
 
-			int minCost;
+			//And the subsequence we are looking for
+			String subseq = stdin.next();
 
-			//Take in the stick length
-			int sticklength = stdin.nextInt();
+				System.out.println(findshtuff(seq, subseq, index1, index2));
 
-			//Take in the number of cuts to be made to the stick
-			int numCuts = stdin.nextInt();
-
-			//Make an array out of the positions at which the stick needs to be cut
-			ArrayList<Integer> arrCuts = new ArrayList<Integer>();
-
-			//For however many cuts there are
-			for(int i = 0; i < numCuts; i++)
-			{	//Add the position of the cut to the arrayList
-				arrCuts.add(stdin.nextInt());
-			}
-
-			//Send the original stick length and cut list to the function
-			minCost = findshtuff(sticklength, arrCuts);
-
-			System.out.println(minCost);
-		}
-			//Move to next case
 			cases--;
 		}
-
-
-	public static int findshtuff(int sticklength, ArrayList<Integer> arrCuts) {
-
-		//Set the cost high to compare it to lowest case
-		int cost = 65535, tempcost;
-		ArrayList<Integer> newarr, newarr2;
-
-		//Base case
-		if(arrCuts.isEmpty())
-			return 0;
-
-		//If my hash map contains the key of original sticklength, we've already
-		//done the work, so return the value stored there
-		if(hashy.containsKey(sticklength))
-		{
-			return hashy.get(sticklength);
-		}
-
-		//For the size of the array list (# of cuts)...
-			for(int i = 0; i < arrCuts.size(); i++){
-
-				//Make new stick length after cut??
-				int stickRight = sticklength, stickLeft;
-
-				//CHOP
-				//Now we have two sticks, on the right side, we have the stick cut down to whatever
-				//It's original length was, minus the part we chopped off
-				stickRight -= arrCuts.get(i);
-
-				//The stick on the left is now just the size of whatever the cut was we just made
-				stickLeft = arrCuts.get(i);
-
-				//Now we make a new ArrayList
-				newarr2 = new ArrayList<Integer>();
-
-				//Add the arraylist of cuts to the new array
-				for(int j = 0; j < i; j++){
-					newarr2.add(arrCuts.get(j));
-				}
-
-				//Same as above except..
-				newarr = new ArrayList<Integer>();
-
-				//We put the original cuts from our first array at index k, minus the same cut at index before it
-				for(int k = i+1; k < arrCuts.size(); k++){
-					newarr.add(arrCuts.get(k) - arrCuts.get(i));
-
-				}
-
-				//The temporary cost is the original stick length, plus the cost of cutting the right and left stick
-				tempcost = sticklength + findshtuff(stickRight, newarr) + findshtuff(stickLeft, newarr2);
-
-				//If the tempcost is smaller than the current mincost
-				if(tempcost < cost)
-					cost = tempcost;
-
-				//Put the value of the minimum cost plus the sticks length into the hashmap
-				hashy.put(sticklength, cost); //This aint gonna work
-			}
-
-			return cost;
 	}
 
+
+	public static int findshtuff(String seq, String subseq, int index1, int index2) {
+		int answer = 0;
+
+		//Base case, if
+		if(index2 == subseq.length())
+			return 1;
+
+		//If we've already done the work, just return what's stored index of the sequence and the substring at index2
+		if(hashy.containsKey(index1 + subseq.substring(index2)))
+		{
+			return hashy.get(index1 + subseq.substring(index2));
+		}
+
+		//We start index1 at the beginning of the sequence we are looking at
+		for(int i = index1; i < seq.length(); i++){
+
+			//If at position i in the sequence we find the same character at position i in the subsequence
+			if (seq.charAt(i) == subseq.charAt(index2)){
+
+				//We increase the answer and move the indexes up by 1
+				answer += findshtuff(seq, subseq, i+1, index2+1);
+			}
+		}
+
+		//Either way, we make the the index of the sequence + the substring at index2 as our key, and store the answer as our value
+		hashy.put(index1 + subseq.substring(index2), answer); //substring takes whatever the string is from the given index and onward
+
+		return answer;
+	}
 }
